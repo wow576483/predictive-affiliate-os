@@ -1,0 +1,21 @@
+{
+  "name": "predictive-affiliate-os",
+  "version": "11.0.0",
+  "description": "Predictive Affiliate OS (V11.0) — statistical decision engine for COD affiliate marketers. Google Sheets frontend + Apps Script/Node backend.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test",
+    "lint": "eslint src test scripts",
+    "demo": "node scripts/demo.js",
+    "build:gs": "node scripts/build-appsscript.js",
+    "push:gs": "npm run build:gs && cd dist/appsscript && clasp push"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "eslint": "^9.39.4"
+  }
+}
