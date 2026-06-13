@@ -1,7 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { runPipeline } from '../src/core/pipeline.js';
+import { parseDailyTab } from '../src/core/parser.js';
 import { multiDayRecords } from './fixtures/generate.js';
+import { REAL_DAY_2026_06_08, REAL_DAY_2026_06_11 } from './fixtures/realScraperSample.js';
 
 test('pipeline produces radar, watchlist and winners DNA', () => {
   const out = runPipeline(multiDayRecords(), {});
@@ -53,4 +55,24 @@ test('config overrides change FX and thus margins', () => {
   const lP = low.products.find((p) => p.url === 'u/winner-1');
   // Higher LYD-per-USD => fewer USD per price => smaller margin.
   assert.ok(hP.marginUsd > lP.marginUsd);
+});
+
+test('real sample: end-to-end pipeline aggregates by URL across days', () => {
+  const records = parseDailyTab(REAL_DAY_2026_06_08, { date: '2026-06-08' })
+    .concat(parseDailyTab(REAL_DAY_2026_06_11, { date: '2026-06-11' }));
+  const out = runPipeline(records, { configOverrides: { fxUsdToLyd: 4.85 } });
+
+  // Products keyed by URL; the shoe appears on both days -> single product.
+  const shoe = out.products.find((p) => p.url.endsWith('/ahdiya-rijal'));
+  assert.ok(shoe, 'shoe product should be aggregated');
+  assert.ok(shoe.daysInMarket >= 2);
+  assert.equal(typeof shoe.launchConfidence, 'number');
+  assert.ok(shoe.reasoning.length > 0);
+
+  // Margin computed from LYD price via FX (219 LYD / 4.85 - $10 cost > 0).
+  assert.ok(shoe.marginUsd > 0);
+
+  // The cost-without-price gap row must not crash the pipeline.
+  const partial = out.products.find((p) => p.url.endsWith('/ustuwana-tilaa'));
+  assert.ok(partial, 'partial-price product still flows through');
 });
