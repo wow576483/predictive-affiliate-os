@@ -60,7 +60,7 @@ test('config overrides change FX and thus margins', () => {
 test('real sample: end-to-end pipeline aggregates by URL across days', () => {
   const records = parseDailyTab(REAL_DAY_2026_06_08, { date: '2026-06-08' })
     .concat(parseDailyTab(REAL_DAY_2026_06_11, { date: '2026-06-11' }));
-  const out = runPipeline(records, { configOverrides: { fxUsdToLyd: 4.85 } });
+  const out = runPipeline(records, { configOverrides: { fxUsdToLyd: 8.75 } });
 
   // Products keyed by URL; the shoe appears on both days -> single product.
   const shoe = out.products.find((p) => p.url.endsWith('/ahdiya-rijal'));
@@ -69,7 +69,7 @@ test('real sample: end-to-end pipeline aggregates by URL across days', () => {
   assert.equal(typeof shoe.launchConfidence, 'number');
   assert.ok(shoe.reasoning.length > 0);
 
-  // Margin computed from LYD price via FX (219 LYD / 4.85 - $10 cost > 0).
+  // Margin computed from LYD price via FX (219 LYD / 8.75 - $10 cost > 0).
   assert.ok(shoe.marginUsd > 0);
 
   // The cost-without-price gap row must not crash the pipeline.

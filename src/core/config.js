@@ -8,7 +8,7 @@ export const DEFAULT_CONFIG = {
   // --- Currency -----------------------------------------------------------
   // Cost is scraped in USD, market price in LYD. Margin needs a conversion
   // rate. Configurable; user picks official vs parallel rate.
-  fxUsdToLyd: 4.85,
+  fxUsdToLyd: 8.75,
 
   // --- Trend / history windows -------------------------------------------
   trend: {

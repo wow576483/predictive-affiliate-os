@@ -60,7 +60,7 @@ The full math is documented inline in each engine file.
 ## Currency
 
 Cost is scraped in **USD**, market price in **LYD**. Margin requires a
-conversion rate, configured via `fxUsdToLyd` (default `4.85`, editable in the
+conversion rate, configured via `fxUsdToLyd` (default `8.75`, editable in the
 `_CONFIG` sheet). Choose the official or parallel-market rate as appropriate.
 
 ## Output sheets (Frontend UI — STEP 2)
