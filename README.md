@@ -60,19 +60,41 @@ The full math is documented inline in each engine file.
 ## Currency
 
 Cost is scraped in **USD**, market price in **LYD**. Margin requires a
-conversion rate, configured via `fxUsdToLyd` (default `4.85`, editable in the
+conversion rate, configured via `fxUsdToLyd` (default `8.75`, editable in the
 `_CONFIG` sheet). Choose the official or parallel-market rate as appropriate.
 
-## Output sheets
+## Output sheets (Frontend UI — STEP 2)
+
+The presentation layer lives in `src/appsscript/Format.gs` (header styling,
+conditional color rules, data validation, number formats, charts) and is applied
+by the writers in `Main.gs`. Pure presentation — no business logic.
 
 - **OPPORTUNITY RADAR** — top 10 opportunities: `Product Name | Launch Confidence
   Score | Urgency Score | Market Capacity | Budget Allocation % | Recommended
-  Action | Decision Explanation (Reasoning)`
+  Action | Decision Explanation (Reasoning)`. Confidence/Urgency use a
+  red→yellow→green color scale; Market Capacity and Recommended Action are
+  colored chips; Budget Allocation is percent-formatted with a color scale.
 - **WATCHLIST** — products where `Confidence > 60 & Saturation > 50 & Half-Life
-  > 7 Days`.
-- **FINANCIAL CALCULATOR** — editable per-product inputs (Delivery Rate, Return
-  Penalty, Target CPA, Risk Tier).
-- **WINNERS DNA** — historical fingerprint and macro trends.
+  > 7 Days`. Same color conventions.
+- **FINANCIAL CALCULATOR** — editable inputs (amber `Delivery Rate`, `Return
+  Penalty`, `Target CPA`, `Risk Tier` dropdown) plus read-only outputs (grey
+  `Effective CPA`, `Return Penalty Burden`, `Expected Net Profit`, `Max Allowed
+  CPA`, `Profitable?`). User edits to inputs are preserved across runs; outputs
+  refresh on each **Run Analysis**.
+- **WINNERS DNA** — fingerprint metric cards, a category-share table, and an
+  embedded column chart of winning category share.
+- Hidden backend sheets: `_TIMESERIES`, `_STATE`, `_CONFIG`.
+
+### Color & formatting conventions
+
+| Element | Rule |
+|---|---|
+| 0–100 scores | gradient red (0) → yellow (50) → green (100) |
+| Market Capacity | High = green, Medium = amber, Low = red |
+| Recommended Action | Launch = green, Test = amber, Watch = grey, Avoid/Skip = red |
+| Expected Net Profit | positive = green, ≤ 0 = red |
+| Editable input cells | amber background `#FFF8E1` |
+| Read-only output cells | grey background `#F2F4F7` |
 
 ## Develop
 
@@ -97,5 +119,6 @@ Use **Affiliate OS ▸ Seed Demo Tabs** to create sample ingestion tabs.
 
 - **STEP 1 (Complete)** — backend logic: parser, engines, similarity,
   explainability, and writing results into the sheet.
-- **STEP 2 (Pending)** — detailed Sheets UI design (layout, formatting,
-  dashboards), to begin after the backend is confirmed.
+- **STEP 2 (Complete)** — Frontend Sheets UI: header styling, conditional
+  formatting, data validation, number formats, sheet ordering, and the Winners
+  DNA category chart (`src/appsscript/Format.gs`).
