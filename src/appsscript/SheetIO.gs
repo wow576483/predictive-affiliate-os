@@ -53,17 +53,30 @@ function readAllRecords_() {
   return records;
 }
 
-/** Load persisted per-URL confidence history (JSON in _STATE!A1). */
+// Cells cap at 50000 chars; chunk state JSON across rows in column A.
+var STATE_CHUNK_SIZE = 45000;
+
+/** Load persisted state (JSON chunked down column A of _STATE). */
 function loadState_() {
   var sh = getOrCreateSheet_(SHEETS.STATE, true);
-  var raw = sh.getRange('A1').getValue();
+  var last = sh.getLastRow();
+  if (!last) return { confidenceHistoryByUrl: {}, fingerprint: null };
+  var vals = sh.getRange(1, 1, last, 1).getValues();
+  var raw = vals.map(function (r) { return r[0]; }).join('');
   if (!raw) return { confidenceHistoryByUrl: {}, fingerprint: null };
   try { return JSON.parse(raw); } catch (e) { return { confidenceHistoryByUrl: {}, fingerprint: null }; }
 }
 
 function saveState_(state) {
   var sh = getOrCreateSheet_(SHEETS.STATE, true);
-  sh.getRange('A1').setValue(JSON.stringify(state));
+  sh.clearContents();
+  var json = JSON.stringify(state);
+  var chunks = [];
+  for (var i = 0; i < json.length; i += STATE_CHUNK_SIZE) {
+    chunks.push([json.substring(i, i + STATE_CHUNK_SIZE)]);
+  }
+  if (!chunks.length) chunks.push(['']);
+  sh.getRange(1, 1, chunks.length, 1).setValues(chunks);
 }
 
 /** Read optional config overrides from the _CONFIG sheet (key | value rows). */
