@@ -51,9 +51,9 @@ function scoreColorScaleRule_(range) {
 /** Percent color scale anchored to the max value in the column. */
 function percentColorScaleRule_(range) {
   return SpreadsheetApp.newConditionalFormatRule()
-    .setGradientMinpoint(THEME.scoreLow)
-    .setGradientMidpoint(THEME.scoreMid)
-    .setGradientMaxpoint(THEME.scoreHigh)
+    .setGradientMinpointWithValue(THEME.scoreLow, SpreadsheetApp.InterpolationType.PERCENTILE, '0')
+    .setGradientMidpointWithValue(THEME.scoreMid, SpreadsheetApp.InterpolationType.PERCENTILE, '50')
+    .setGradientMaxpointWithValue(THEME.scoreHigh, SpreadsheetApp.InterpolationType.PERCENTILE, '100')
     .setRanges([range])
     .build();
 }
